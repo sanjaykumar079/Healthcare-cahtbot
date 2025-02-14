@@ -1,0 +1,55 @@
+import streamlit as st
+import requests
+
+# Set your GMEANI API URL and API key here
+GMEANI_API_URL = "https://api.gmeani.com/query"  # This URL might vary based on GMEANI documentation
+API_KEY ="AIzaSyDgZtTC9pc7Fke7lPbbvAZN3k5UiA8DOLo"
+
+
+# Function to get a response from GMEANI AI for health-related queries
+def get_health_advice(query):
+    import os
+    import google.generativeai as genai
+
+    genai.configure(api_key=API_KEY)
+
+    # Create the model
+    generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 40,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+    }
+
+    model = genai.GenerativeModel(
+    model_name="gemini-2.0-flash",
+    generation_config=generation_config,
+    )
+
+    chat_session = model.start_chat(
+    history=[
+    ]
+    )
+
+    response = chat_session.send_message(query)
+
+    return response.text
+# Streamlit UI components
+st.title("AI-Powered Health Assistant")
+
+st.write("""
+This AI Health Assistant can help answer health-related queries.
+Ask anything about fitness, diet, medical advice, and more!
+""")
+
+# Input field for the user to ask a health-related question
+user_input = st.text_input("Ask a health-related question:")
+
+if user_input:
+    # Get response from GMEANI AI
+    response = get_health_advice(user_input)
+    
+    # Display the response
+    st.write("AI Response:")
+    st.write(response)
